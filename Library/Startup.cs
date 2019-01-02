@@ -50,6 +50,7 @@ namespace Library.API
         public void Configure(IApplicationBuilder app, IHostingEnvironment env,
             LibraryContext libraryContext, ILoggerFactory loggerFactory)
         {
+
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
