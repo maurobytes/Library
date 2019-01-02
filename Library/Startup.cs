@@ -34,8 +34,8 @@ namespace Library.API
             services.AddMvc(setupAction =>
             {
                 setupAction.ReturnHttpNotAcceptable = true;
-                setupAction.OutputFormatters.Add(new XmlDataContractSerializerOutputFormatter());
             })
+            .AddXmlDataContractSerializerFormatters()
             .SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
 
             var connectionString = Configuration["connectionStrings:libraryDBConnectionString"];
