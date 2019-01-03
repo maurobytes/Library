@@ -24,5 +24,7 @@ namespace Library.API.Helpers
             }
         }
 
+        public string Genre { get; set; }
+
     }
 }
