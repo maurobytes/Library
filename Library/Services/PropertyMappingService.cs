@@ -31,12 +31,34 @@ namespace Library.API.Services
             //get matching mapping
             var matchingMapping = propertyMappings.OfType<PropertyMapping<TSource, TDestination>>();
 
-            if(matchingMapping.Count() == 1)
+            if (matchingMapping.Count() == 1)
             {
                 return matchingMapping.First()._mappingDictionary;
             }
 
             throw new Exception($"Cannot find exact property mapping instance for <{typeof(TSource)}>");
+        }
+
+        public bool ValidMappingExistsFor<TSource, TDestination>(string fields)
+        {
+            var propertyMapping = GetPropertyMapping<TSource, TDestination>();
+
+            if (string.IsNullOrWhiteSpace(fields))
+                return true;
+
+            var fieldAfterSplit = fields.Split(',');
+
+            foreach (var field in fieldAfterSplit)
+            {
+                var trimmedField = field.Trim();
+                var indexOfFirstSpace = trimmedField.IndexOf(" ");
+                var propertyName = indexOfFirstSpace == -1 ?
+                    trimmedField : trimmedField.Remove(indexOfFirstSpace);
+
+                if (!propertyMapping.ContainsKey(propertyName))
+                    return false;
+            }
+            return true;
         }
     }
 }
