@@ -32,6 +32,7 @@ namespace Library.API.Controllers
         }
 
         [HttpGet(Name = "GetAuthors")]
+        [HttpHead]
         public IActionResult GetAuthors(AuthorsResourceParameters authorsResourceParameters)
         {
             if(!_propertyMappingService.ValidMappingExistsFor<AuthorDto, Author>(authorsResourceParameters.OrderBy))
@@ -182,6 +183,13 @@ namespace Library.API.Controllers
                 throw new Exception($"Deleting author {id} failed on save.");
 
             return NoContent();
+        }
+
+        [HttpOptions]
+        public IActionResult GetAuthorsOptions()
+        {
+            Response.Headers.Add("Allow", "GET,OPTIONS,POST");
+            return Ok();
         }
     }
 }
