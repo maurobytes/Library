@@ -120,7 +120,29 @@ namespace Library.API.Controllers
         }
 
         [HttpPost(Name = "CreateAuthor")]
+        [RequestHeaderMatchesMediaTypeAttribute("Content-Type", 
+            new [] { "application/vnd.mauricio.author.full+json"})]
         public IActionResult CreateAuthor([FromBody] AuthorForCreationDto author)
+        {
+            if (author == null)
+                return BadRequest();
+
+            var authorEntity = Mapper.Map<Author>(author);
+
+            _libraryRepository.AddAuthor(authorEntity);
+
+            if (!_libraryRepository.Save())
+                throw new Exception("Creating an author failed to save.");
+
+            var authorToReturn = Mapper.Map<AuthorDto>(authorEntity);
+
+            return CreatedAtRoute("GetAuthor", new { id = authorToReturn.Id }, authorToReturn);
+        }
+
+        [HttpPost(Name = "CreateAuthorWithDateOfDeath")]
+        [RequestHeaderMatchesMediaTypeAttribute("Content-Type",
+            new[] { "application/vnd.mauricio.author.authorwithdateofdeath+json" })]
+        public IActionResult CreateAuthor([FromBody] AuthorForCreationWithDateOfDeathDto author)
         {
             if (author == null)
                 return BadRequest();

@@ -39,6 +39,18 @@ namespace Library.API
             {
                 setupAction.ReturnHttpNotAcceptable = true;
 
+                var jsonInputFormatters = setupAction.InputFormatters
+                .OfType<JsonInputFormatter>().FirstOrDefault();
+
+                if(jsonInputFormatters != null)
+                {
+                    jsonInputFormatters.SupportedMediaTypes
+                    .Add("application/vnd.mauricio.author.full+json");
+                    jsonInputFormatters.SupportedMediaTypes
+                    .Add("application/vnd.mauricio.authorwithdateofdeath.full+json");
+
+                }
+
                 var jsonOutputFormatter = setupAction.OutputFormatters
                 .OfType<JsonOutputFormatter>().FirstOrDefault();
 
@@ -106,11 +118,13 @@ namespace Library.API
             {
                 cfg.CreateMap<Author, AuthorDto>()
                 .ForMember(dest => dest.Name, opt => opt.MapFrom(src => $"{src.FirstName} {src.LastName}"))
-                .ForMember(dest => dest.Age, opt => opt.MapFrom(src => src.DateOfBirth.GetCurrentAge()));
+                .ForMember(dest => dest.Age, opt => opt.MapFrom(src => src.DateOfBirth.GetCurrentAge(src.DateOfDeath)));
 
                 cfg.CreateMap<Book, BookDto>();
 
                 cfg.CreateMap<AuthorForCreationDto, Author>();
+
+                cfg.CreateMap<AuthorForCreationWithDateOfDeathDto, Author>();
 
                 cfg.CreateMap<BookForCreationDto, Book>();
 
