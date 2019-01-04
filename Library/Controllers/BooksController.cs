@@ -28,7 +28,8 @@ namespace Library.API.Controllers
         }
 
         [HttpGet(Name = "GetBooksForAuthor")]
-        public IActionResult GetBooksForAuthor(Guid authorId)
+        public IActionResult GetBooksForAuthor(Guid authorId, 
+            [FromHeader (Name = "Accept")] string mediaType)
         {
             if (!_libraryRepository.AuthorExists(authorId))
                 return NotFound();
@@ -37,15 +38,24 @@ namespace Library.API.Controllers
 
             var booksForAuthor = Mapper.Map<IEnumerable<BookDto>>(booksForAuthorFromRepo);
 
-            booksForAuthor = booksForAuthor.Select(book =>
+
+            if(mediaType == "application/vnd.mauricio.hateoas+json")
             {
-                book = CreateLinksForBook(book);
-                return book;
-            });
+                booksForAuthor = booksForAuthor.Select(book =>
+                {
+                    book = CreateLinksForBook(book);
+                    return book;
+                });
 
-            var wrapper = new LinkedCollectionResourceWrapperDto<BookDto>(booksForAuthor);
+                var wrapper = new LinkedCollectionResourceWrapperDto<BookDto>(booksForAuthor);
 
-            return Ok(CreateLinksForBooks(wrapper));
+                return Ok(CreateLinksForBooks(wrapper));
+            }
+            else
+            {
+                return Ok(booksForAuthor);
+            }
+           
         }
 
         [HttpGet("{id}", Name = "GetBookForAuthor")]

@@ -38,6 +38,14 @@ namespace Library.API
             services.AddMvc(setupAction =>
             {
                 setupAction.ReturnHttpNotAcceptable = true;
+
+                var jsonOutputFormatter = setupAction.OutputFormatters
+                .OfType<JsonOutputFormatter>().FirstOrDefault();
+
+                if(jsonOutputFormatter != null)
+                {
+                    jsonOutputFormatter.SupportedMediaTypes.Add("application/vnd.mauricio.hateoas+json");
+                }
             })
             .AddXmlDataContractSerializerFormatters()
             .SetCompatibilityVersion(CompatibilityVersion.Version_2_1)

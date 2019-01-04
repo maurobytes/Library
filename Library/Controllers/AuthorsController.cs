@@ -119,7 +119,7 @@ namespace Library.API.Controllers
             return Ok(author.ShapeData(fields));
         }
 
-        [HttpPost]
+        [HttpPost(Name = "CreateAuthor")]
         public IActionResult CreateAuthor([FromBody] AuthorForCreationDto author)
         {
             if (author == null)
