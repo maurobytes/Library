@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using AspNetCoreRateLimit;
 using Library.API.Entities;
 using Library.API.Helpers;
 using Library.API.Models;
@@ -92,6 +93,24 @@ namespace Library.API
             });
 
             services.AddResponseCaching();
+
+            services.AddMemoryCache();
+
+            services.Configure<IpRateLimitOptions>(options =>
+            {
+                options.GeneralRules = new List<RateLimitRule>()
+                {
+                    new RateLimitRule()
+                    {
+                        Endpoint = "*",
+                        Limit = 3,
+                        Period = "5m"
+                    }
+                };
+            });
+
+            services.AddSingleton<IRateLimitCounterStore, MemoryCacheRateLimitCounterStore>();
+            services.AddSingleton<IIpPolicyStore, MemoryCacheIpPolicyStore>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -144,6 +163,8 @@ namespace Library.API
             });
 
             libraryContext.EnsureSeedDataForContext();
+
+            app.UseIpRateLimiting();
 
             app.UseResponseCaching();
 
